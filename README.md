@@ -310,7 +310,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Having issues? We're here to help!
 
-- 📧 **Email**: support@telegram-scheduler.com
+- 📧 **Email**: bagrimadhav92@gmail.com
 - 💬 **Telegram**: @your_support_bot
 - 🐛 **Bug Reports**: GitHub Issues
 - 💡 **Feature Requests**: GitHub Discussions
@@ -320,3 +320,4 @@ Having issues? We're here to help!
 **Made with ❤️ by the Telegram Scheduler Team**
 
 ⭐ Star this repo if you found it helpful!
+
