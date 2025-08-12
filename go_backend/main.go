@@ -368,7 +368,7 @@ func saveMapping(coll *mongo.Collection, phone string, chatID int64, bot *tgbota
 }
 
 func enableCORS(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173") // allow all origins
+	w.Header().Set("Access-Control-Allow-Origin", "*") // allow all origins
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
