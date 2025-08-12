@@ -33,7 +33,7 @@ const MessageScheduler = () => {
     
     try{
 
-      const response = await fetch(`http://localhost:5000/sendmessage?phone=${userBPhone}&userAphone=${userAPhone}&message=${message}&time=${time}&date=${date}`);
+      const response = await fetch(`http://localhost:9000/sendmessage?phone=${userBPhone}&userAphone=${userAPhone}&message=${message}&time=${time}&date=${date}`);
       const data = await response.json();
       console.log(data);
     } catch (error) {
