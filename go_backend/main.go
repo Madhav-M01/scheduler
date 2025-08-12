@@ -43,9 +43,26 @@ func main() {
 	if err != nil {
 		log.Fatal("error loading .env file")
 	}
-	botToken := os.Getenv("BOT_TOKEN")
+	botToken := "8350273383:AAFK4XS4qY1LNNHFvXnlENxU7L1yzbOONZ8"
 	mongoURI := os.Getenv("MONGO_URI")
-	
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9000"
+	}
+
+	// Check if required environment variables are set
+	if botToken == "" {
+		log.Println("⚠️  BOT_TOKEN not set - bot functionality will be disabled")
+		botToken = "dummy_token"
+	}
+	if mongoURI == "" {
+		log.Fatal("❌ MONGO_URI must be set")
+	}
+
+	// Simple handler for root URL
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "🚀 Go Backend is running successfully on Render!")
+	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -60,7 +77,7 @@ func main() {
 	collection = db.Collection("user_mappings")
 	scheduleColl = db.Collection("scheduled_messages")
 
-	go startHTTPServer()
+	go startHTTPServer(port)
 
 	// Start Telegram bot
 	bot, err = tgbotapi.NewBotAPI(botToken)
@@ -90,80 +107,173 @@ func main() {
 				if len(parts) >= 2 {
 					phone := parts[1]
 					saveMapping(collection, phone, chatID, bot, "✅ Phone %s linked to your account via Gilgamesh!")
-					// FE me message navigate("/schedule", { state: { userAPhone, userBPhone } }); krna hai ye back end ka code hai 
+					// FE me message navigate("/schedule", { state: { userAPhone, userBPhone } }); krna hai ye back end ka code hai
 				} else {
 					bot.Send(tgbotapi.NewMessage(chatID, "❌ Invalid invitation format"))
 				}
 			}
 		}
 	}
+
+	// Start HTTP server in main function
+	log.Printf("🚀 HTTP server running on :%s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }
 
-func startHTTPServer() {
-	http.HandleFunc("/check-user", func(w http.ResponseWriter, r *http.Request) {
-		enableCORS(w)
-		if r.Method == http.MethodOptions {
-			return
-		}
-		phone := r.URL.Query().Get("phone")
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
+// func startHTTPServer(port string) {
+// 	log.Printf("🚀 HTTP server running on :%s", port)
+//     if err := http.ListenAndServe(":"+port, nil); err != nil {
+//         log.Fatalf("Server failed to start: %v", err)
+//     }
 
-		count, err := collection.CountDocuments(ctx, bson.M{"phone": phone})
-		if err != nil {
-			http.Error(w, "Database error", http.StatusInternalServerError)
-			return
-		}
-		
-		json.NewEncoder(w).Encode(map[string]bool{"exists": count > 0})
-	})
+// 	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+// 		enableCORS(w)
+// 		w.Write([]byte("✅ Backend is alive and well!"))
+// 	})
 
-	// New endpoint to schedule message
-	http.HandleFunc("/sendmessage", func(w http.ResponseWriter, r *http.Request) {
-		enableCORS(w)
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK) 
-			return
-		}
+	
+// 	http.HandleFunc("/check-user", func(w http.ResponseWriter, r *http.Request) {
+// 		enableCORS(w)
+// 		if r.Method == http.MethodOptions {
+// 			w.WriteHeader(http.StatusOK)
+// 			return
+// 		}
+// 		phone := r.URL.Query().Get("phone")
+// 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 		defer cancel()
 
-		phone := r.URL.Query().Get("phone")
-		userAphone := r.URL.Query().Get("userAphone")
-		message := r.URL.Query().Get("message")
-		timeStr := r.URL.Query().Get("time")
-		dateStr := r.URL.Query().Get("date")
+// 		count, err := collection.CountDocuments(ctx, bson.M{"phone": phone})
+// 		if err != nil {
+// 			http.Error(w, "Database error", http.StatusInternalServerError)
+// 			return
+// 		}
 
-		loc, _ := time.LoadLocation("Asia/Kolkata") // or your timezone //addd
-		sendTime, err := time.ParseInLocation("15:04_2006-01-02", timeStr+"_"+dateStr, loc)
-		if err != nil {
-			http.Error(w, "Invalid date/time format", http.StatusBadRequest)
-			return
-		}
-		log.Println("Scheduling message for:", sendTime, "Current time:", time.Now())
+// 		json.NewEncoder(w).Encode(map[string]bool{"exists": count > 0})
+// 	})
 
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		_, err = scheduleColl.InsertOne(ctx, ScheduledMessage{
-			Phone:      phone,
-			UserAPhone: userAphone,
-			Message:    message,
-			SendAt:     sendTime,
-			Sent:       false,
-		})
-		if err != nil {
-			http.Error(w, "Failed to save schedule", http.StatusInternalServerError)
-			return
-		}
-		if err := json.NewEncoder(w).Encode(map[string]string{"status": "scheduled"}); err != nil {
-			http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
-			return
-		}
-		
-		//json.NewEncoder(w).Encode(map[string]string{"status": "scheduled"})
-	})
+// 	// New endpoint to schedule message
+// 	http.HandleFunc("/sendmessage", func(w http.ResponseWriter, r *http.Request) {
+// 		enableCORS(w)
+// 		if r.Method == http.MethodOptions {
+// 			w.WriteHeader(http.StatusOK)
+// 			return
+// 		}
 
-	log.Println("HTTP server running on :5000")
-	log.Fatal(http.ListenAndServe(":5000", nil))
+// 		phone := r.URL.Query().Get("phone")
+// 		userAphone := r.URL.Query().Get("userAphone")
+// 		message := r.URL.Query().Get("message")
+// 		timeStr := r.URL.Query().Get("time")
+// 		dateStr := r.URL.Query().Get("date")
+
+// 		loc, _ := time.LoadLocation("Asia/Kolkata") // or your timezone //addd
+// 		sendTime, err := time.ParseInLocation("15:04_2006-01-02", timeStr+"_"+dateStr, loc)
+// 		if err != nil {
+// 			http.Error(w, "Invalid date/time format", http.StatusBadRequest)
+// 			return
+// 		}
+// 		log.Println("Scheduling message for:", sendTime, "Current time:", time.Now())
+
+// 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+// 		defer cancel()
+// 		_, err = scheduleColl.InsertOne(ctx, ScheduledMessage{
+// 			Phone:      phone,
+// 			UserAPhone: userAphone,
+// 			Message:    message,
+// 			SendAt:     sendTime,
+// 			Sent:       false,
+// 		})
+// 		if err != nil {
+// 			http.Error(w, "Failed to save schedule", http.StatusInternalServerError)
+// 			return
+// 		}
+// 		if err := json.NewEncoder(w).Encode(map[string]string{"status": "scheduled"}); err != nil {
+// 			http.Error(w, "failed to encode JSON", http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		//json.NewEncoder(w).Encode(map[string]string{"status": "scheduled"})
+// 	})
+// }
+func startHTTPServer(port string) {
+    mux := http.NewServeMux()
+
+    // Ping route
+    mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+        enableCORS(w)
+        if r.Method == http.MethodOptions {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
+        w.Write([]byte("✅ Backend is alive and well!"))
+    })
+
+    // Check-user route
+    mux.HandleFunc("/check-user", func(w http.ResponseWriter, r *http.Request) {
+        enableCORS(w)
+        if r.Method == http.MethodOptions {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
+        phone := r.URL.Query().Get("phone")
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+        defer cancel()
+
+        count, err := collection.CountDocuments(ctx, bson.M{"phone": phone})
+        if err != nil {
+            http.Error(w, "Database error", http.StatusInternalServerError)
+            return
+        }
+
+        w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(map[string]bool{"exists": count > 0})
+    })
+
+    // Send message route
+    mux.HandleFunc("/sendmessage", func(w http.ResponseWriter, r *http.Request) {
+        enableCORS(w)
+        if r.Method == http.MethodOptions {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
+
+        phone := r.URL.Query().Get("phone")
+        userAphone := r.URL.Query().Get("userAphone")
+        message := r.URL.Query().Get("message")
+        timeStr := r.URL.Query().Get("time")
+        dateStr := r.URL.Query().Get("date")
+
+        loc, _ := time.LoadLocation("Asia/Kolkata")
+        sendTime, err := time.ParseInLocation("15:04_2006-01-02", timeStr+"_"+dateStr, loc)
+        if err != nil {
+            http.Error(w, "Invalid date/time format", http.StatusBadRequest)
+            return
+        }
+        log.Println("Scheduling message for:", sendTime, "Current time:", time.Now())
+
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+        defer cancel()
+        _, err = scheduleColl.InsertOne(ctx, ScheduledMessage{
+            Phone:      phone,
+            UserAPhone: userAphone,
+            Message:    message,
+            SendAt:     sendTime,
+            Sent:       false,
+        })
+        if err != nil {
+            http.Error(w, "Failed to save schedule", http.StatusInternalServerError)
+            return
+        }
+        json.NewEncoder(w).Encode(map[string]string{"status": "scheduled"})
+    })
+
+    log.Printf("🚀 HTTP server running on :%s", port)
+    if err := http.ListenAndServe(":"+port, mux); err != nil {
+        log.Fatalf("Server failed to start: %v", err)
+    }
 }
+
 
 // Scheduler checks every 1 min for due messages
 func startScheduler() {
@@ -172,7 +282,6 @@ func startScheduler() {
 	for range ticker.C {
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		
 
 		now := time.Now().UTC()
 		cursor, err := scheduleColl.Find(ctx, bson.M{
@@ -222,7 +331,6 @@ func startScheduler() {
 func sendMessage(phone string, userAphone string, message string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
 
 	var mapping UserMapping
 	if err := collection.FindOne(ctx, bson.M{"phone": phone}).Decode(&mapping); err != nil {
@@ -257,7 +365,7 @@ func saveMapping(coll *mongo.Collection, phone string, chatID int64, bot *tgbota
 }
 
 func enableCORS(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "*") // allow all origins
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173") // allow all origins
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
