@@ -1,251 +1,299 @@
 # 🚀 Telegram Message Scheduler
 
-A beautiful, modern React application for scheduling messages through Telegram Bot API. Built with a sleek dark theme, smooth animations, and an intuitive user experience.
-
-![Telegram Message Scheduler](https://img.shields.io/badge/React-18+-blue?style=for-the-badge&logo=react)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
-![Lucide React](https://img.shields.io/badge/Lucide-Icons-FF6B6B?style=for-the-badge)
+A powerful Telegram bot application that allows users to schedule messages for future delivery. Built with Go backend and React frontend, featuring user authentication, message scheduling, and automated delivery.
 
 ## ✨ Features
 
-### 🎯 Core Functionality
-- **Smart Phone Verification**: Seamless user authentication with phone number validation
-- **Message Scheduling**: Schedule messages for any future date and time
-- **Quick Templates**: Pre-built message templates for common scenarios
-- **Real-time Validation**: Instant feedback on form inputs and scheduling conflicts
-- **Telegram Integration**: Direct integration with Telegram Bot API
+### 🔐 User Authentication
+- **Phone Number Linking**: Users can link their phone numbers to their Telegram accounts
+- **Multiple Invitation Methods**: Support for both direct userA invitations and Gilgamesh bot invitations
+- **Secure Mapping**: Phone numbers are securely mapped to Telegram chat IDs in MongoDB
 
-### 🎨 Design Excellence
-- **Modern Dark Theme**: Elegant glass-morphism design with subtle gradients
-- **Smooth Animations**: Fluid transitions and micro-interactions
-- **Responsive Layout**: Perfect experience across all device sizes
-- **Accessibility First**: Keyboard navigation and screen reader support
-- **Loading States**: Beautiful loading animations and progress indicators
+### 📅 Message Scheduling
+- **Future Message Scheduling**: Schedule messages for any future date and time
+- **Time Zone Support**: Built-in support for Asia/Kolkata timezone
+- **Automated Delivery**: Background scheduler checks and delivers messages automatically
+- **Message Status Tracking**: Track sent/unsent message status
 
-### 🛠️ Technical Features
-- **React Hooks**: Modern functional components with state management
-- **Form Validation**: Comprehensive input validation and error handling
-- **Character Limits**: Smart text limits with real-time character counting
-- **Date/Time Constraints**: Intelligent scheduling with minimum date/time validation
-- **Copy to Clipboard**: One-click invite link sharing
+### 🌐 API Endpoints
+- **User Verification**: Check if a phone number is registered
+- **Message Scheduling**: Schedule new messages via HTTP API
+- **CORS Support**: Full CORS support for frontend integration
 
-## 🏗️ Project Structure
+### 🤖 Telegram Bot Features
+- **Command Handling**: `/start` commands with invitation parameters
+- **Real-time Updates**: Live message processing and delivery
+- **Error Handling**: Comprehensive error handling and logging
+
+## 🏗️ Architecture
 
 ```
 telegram-scheduler/
-├── src/
-│   ├── components/
-│   │   ├── Login.jsx          # User authentication & phone verification
-│   │   └── MessageScheduler.jsx # Message scheduling interface
-│   ├── utils/
-│   │   └── validation.js      # Input validation helpers
-│   └── styles/
-│       └── globals.css        # Global styles and animations
-├── public/
-│   └── index.html
-├── package.json
-└── README.md
+├── go_backend/
+│   ├── main.go              # Main Go server with bot logic
+│   └── go.mod               # Go dependencies
+├── src/                     # React frontend
+├── package.json             # Frontend dependencies
+└── README.md               # This file
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 16+ 
-- npm or yarn
-- Telegram Bot Token (from [@BotFather](https://t.me/botfather))
 
-### Installation
+- **Go 1.19+** - Backend runtime
+- **Node.js 16+** - Frontend runtime
+- **MongoDB** - Database (local or cloud)
+- **Telegram Bot Token** - From [@BotFather](https://t.me/botfather)
 
-1. **Clone the repository**
+### Backend Setup
+
+1. **Navigate to backend directory:**
    ```bash
-   git clone https://github.com/yourusername/telegram-scheduler.git
-   cd telegram-scheduler
+   cd TELEGRAM_SCHEDULER/go_backend
    ```
 
-2. **Install dependencies**
+2. **Install Go dependencies:**
+   ```bash
+   go mod tidy
+   ```
+
+3. **Create environment file:**
+   ```bash
+   # Create .env file
+   BOT_TOKEN=your_telegram_bot_token_here
+   MONGO_URI=mongodb://localhost:27017
+   ```
+
+4. **Install godotenv package:**
+   ```bash
+   go get github.com/joho/godotenv
+   ```
+
+5. **Run the backend:**
+   ```bash
+   go run main.go
+   ```
+
+### Frontend Setup
+
+1. **Navigate to project root:**
+   ```bash
+   cd TELEGRAM_SCHEDULER
+   ```
+
+2. **Install dependencies:**
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
-3. **Set up environment variables**
+3. **Start development server:**
    ```bash
-   cp .env.example .env.local
+   npm run dev
    ```
-   
-   Add your configuration:
-   ```env
-   REACT_APP_BOT_USERNAME=your_bot_username
-   REACT_APP_API_URL=your_api_endpoint
-   ```
-
-4. **Start the development server**
-   ```bash
-   npm start
-   # or
-   yarn start
-   ```
-
-5. **Open your browser**
-   Navigate to `http://localhost:3000`
-
-## 🎨 Design System
-
-### Color Palette
-- **Primary**: Purple gradients (`from-purple-600 to-violet-600`)
-- **Background**: Dark slate (`from-slate-950 via-purple-950 to-slate-900`)
-- **Surface**: Semi-transparent slate (`bg-slate-900/60`)
-- **Text**: White primary, slate-400 secondary
-
-### Typography
-- **Headings**: Bold, gradient text with purple-violet transitions
-- **Body**: Clean, readable text with proper contrast ratios
-- **Labels**: Semibold with icon accompaniments
-
-### Components
-- **Glass Morphism**: Backdrop blur with semi-transparent backgrounds
-- **Rounded Corners**: Consistent border radius (xl = 12px, 2xl = 16px)
-- **Shadows**: Subtle drop shadows for depth and hierarchy
-
-## 📱 User Flow
-
-1. **Phone Verification**
-   - User enters phone number
-   - System checks if user exists
-   - New users redirected to Telegram bot
-   - Existing users proceed to scheduling
-
-2. **Friend Invitation** (Optional)
-   - Add friend's phone number
-   - Generate invite link
-   - Share via Telegram or copy link
-
-3. **Message Scheduling**
-   - Choose from quick templates or write custom message
-   - Select date and time
-   - Confirm and schedule message
-
-## 🔄 API Integration
-
-### Telegram Bot Setup
-```javascript
-// Bot commands structure
-/start - Initialize user session
-/help - Show available commands
-/schedule - Quick schedule interface
-/list - Show scheduled messages
-/cancel - Cancel scheduled message
-```
-
-### Expected API Endpoints
-```javascript
-POST /api/users/verify          # Phone verification
-POST /api/users/invite          # Generate invite links  
-POST /api/messages/schedule     # Schedule new message
-GET  /api/messages/list         # List scheduled messages
-DELETE /api/messages/:id        # Cancel scheduled message
-```
-
-## 🎯 Message Templates
-
-Built-in templates include:
-- 🌅 **Morning Greetings**: "Good morning! Hope you have a wonderful day!"
-- 📅 **Meeting Reminders**: "Don't forget about our meeting today!"
-- 🎉 **Birthday Wishes**: "Happy Birthday! Wishing you all the best!"
-- ⏰ **Appointment Alerts**: "Reminder: Your appointment is scheduled for today"
 
 ## 🔧 Configuration
 
 ### Environment Variables
+
+Create a `.env` file in the `go_backend` directory:
+
 ```env
 # Telegram Bot Configuration
-REACT_APP_BOT_USERNAME=your_bot_username
-REACT_APP_BOT_TOKEN=your_bot_token
+BOT_TOKEN=your_bot_token_from_botfather
 
-# API Configuration  
-REACT_APP_API_URL=https://your-api.com
-REACT_APP_API_KEY=your_api_key
+# Database Configuration
+MONGO_URI=mongodb://localhost:27017
 
-# Feature Flags
-REACT_APP_ENABLE_TEMPLATES=true
-REACT_APP_MAX_MESSAGE_LENGTH=1000
-REACT_APP_TIMEZONE=UTC
+# Optional: Custom timezone (default: Asia/Kolkata)
+TIMEZONE=Asia/Kolkata
 ```
 
-## 📦 Dependencies
+### Bot Token Setup
 
-### Core Dependencies
-- **React**: ^18.2.0 - UI library
-- **React DOM**: ^18.2.0 - DOM rendering
-- **Lucide React**: ^0.263.1 - Beautiful icon library
+1. **Create a bot with @BotFather:**
+   - Message [@BotFather](https://t.me/botfather) on Telegram
+   - Send `/newbot` command
+   - Follow instructions to create your bot
+   - Copy the bot token
 
-### Development Dependencies
-- **Tailwind CSS**: ^3.3.0 - Utility-first CSS framework
-- **PostCSS**: ^8.4.24 - CSS processing
-- **Autoprefixer**: ^10.4.14 - CSS vendor prefixing
+2. **Set the token:**
+   - Add the token to your `.env` file
+   - Restart the backend server
+
+## 📡 API Endpoints
+
+### 1. Check User Existence
+```http
+GET /check-user?phone=1234567890
+```
+
+**Response:**
+```json
+{
+  "exists": true
+}
+```
+
+### 2. Schedule Message
+```http
+GET /sendmessage?phone=1234567890&userAphone=9876543210&message=Hello&time=14:30&date=2024-01-15
+```
+
+**Parameters:**
+- `phone`: Recipient's phone number
+- `userAphone`: Sender's phone number
+- `message`: Message content
+- `time`: Time in HH:MM format
+- `date`: Date in YYYY-MM-DD format
+
+**Response:**
+```json
+{
+  "status": "scheduled"
+}
+```
+
+## 🤖 Bot Commands
+
+### User Registration
+
+1. **Direct UserA Invitation:**
+   ```
+   /start from_userA_1234567890
+   ```
+
+2. **Gilgamesh Bot Invitation:**
+   ```
+   /start invited_by_9999999999_7230038789
+   ```
+
+## 📊 Database Schema
+
+### User Mappings Collection
+```json
+{
+  "phone": "1234567890",
+  "chat_id": 123456789
+}
+```
+
+### Scheduled Messages Collection
+```json
+{
+  "_id": "ObjectId",
+  "phone": "1234567890",
+  "user_a_phone": "9876543210",
+  "message": "Hello World!",
+  "send_at": "2024-01-15T14:30:00Z",
+  "sent": false
+}
+```
+
+## 🔄 Message Flow
+
+1. **User Registration:**
+   - User clicks invitation link
+   - Bot receives `/start` command with phone number
+   - Phone number is mapped to Telegram chat ID
+
+2. **Message Scheduling:**
+   - Frontend calls `/sendmessage` API
+   - Message is stored in database with scheduled time
+   - Background scheduler monitors for due messages
+
+3. **Message Delivery:**
+   - Scheduler checks every minute for due messages
+   - Messages are sent via Telegram Bot API
+   - Status is updated to "sent"
+
+## 🛠️ Development
+
+### Backend Structure
+
+```go
+// Main components
+- UserMapping struct      // Phone to ChatID mapping
+- ScheduledMessage struct // Message scheduling data
+- HTTP server            // API endpoints
+- Telegram bot           // Message handling
+- Scheduler              // Background message delivery
+```
+
+### Key Functions
+
+- `startHTTPServer()` - HTTP API server
+- `startScheduler()` - Background message scheduler
+- `sendMessage()` - Send Telegram messages
+- `saveMapping()` - Save user mappings
+
+## 🚨 Error Handling
+
+The application includes comprehensive error handling:
+
+- **Database Errors**: Logged and reported to users
+- **Bot API Errors**: Graceful handling with retry logic
+- **Invalid Input**: Validation and user-friendly error messages
+- **Network Issues**: Timeout handling and connection management
+
+## 🔒 Security Features
+
+- **Environment Variables**: Sensitive data stored in .env files
+- **Input Validation**: All user inputs are validated
+- **Database Security**: MongoDB with proper access controls
+- **CORS Configuration**: Controlled cross-origin requests
+
+## 📈 Monitoring & Logging
+
+The application provides detailed logging:
+
+- **User Registration**: Phone number mapping logs
+- **Message Scheduling**: Schedule creation and timing logs
+- **Message Delivery**: Success/failure logs
+- **Error Tracking**: Comprehensive error logging
 
 ## 🚀 Deployment
 
-### Build for Production
-```bash
-npm run build
-# or
-yarn build
-```
+### Production Setup
 
-### Deploy to Vercel
-```bash
-npm install -g vercel
-vercel --prod
-```
+1. **Environment Configuration:**
+   ```bash
+   # Set production environment variables
+   export BOT_TOKEN=your_production_bot_token
+   export MONGO_URI=your_production_mongodb_uri
+   ```
 
-### Deploy to Netlify
-```bash
-npm run build
-# Upload dist/ folder to Netlify
-```
+2. **Build Backend:**
+   ```bash
+   cd go_backend
+   go build -o telegram-scheduler
+   ```
 
-## 🧪 Testing
+3. **Run Production Server:**
+   ```bash
+   ./telegram-scheduler
+   ```
 
-### Run Tests
-```bash
-npm test
-# or
-yarn test
-```
+### Docker Deployment
 
-### Test Coverage
-```bash
-npm run test:coverage
-# or
-yarn test:coverage
+```dockerfile
+FROM golang:1.19-alpine
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+RUN go build -o main .
+EXPOSE 5000
+CMD ["./main"]
 ```
 
 ## 🤝 Contributing
 
-We welcome contributions! Please follow these steps:
-
 1. **Fork the repository**
 2. **Create a feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. **Commit your changes**
-   ```bash
-   git commit -m 'Add amazing feature'
-   ```
-4. **Push to the branch**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-5. **Open a Pull Request**
-
-### Development Guidelines
-- Follow the existing code style
-- Add tests for new features
-- Update documentation as needed
-- Ensure all tests pass before submitting
+3. **Make your changes**
+4. **Test thoroughly**
+5. **Submit a pull request**
 
 ## 📝 License
 
@@ -254,42 +302,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **Telegram Bot API** for the messaging infrastructure
-- **Tailwind CSS** for the beautiful styling system
-- **Lucide React** for the gorgeous icon set
-- **React Team** for the amazing framework
+- **MongoDB** for the database solution
+- **Go Team** for the amazing programming language
+- **React Team** for the frontend framework
 
 ## 📞 Support
 
 Having issues? We're here to help!
 
-- 📧 **Email**: support@yourapp.com
-- 💬 **Telegram**: [@your_support_bot](https://t.me/your_support_bot)
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/yourusername/telegram-scheduler/issues)
-- 💡 **Feature Requests**: [GitHub Discussions](https://github.com/yourusername/telegram-scheduler/discussions)
-
-## 🔮 Roadmap
-
-### Version 2.0
-- [ ] Multi-language support
-- [ ] Recurring message scheduling
-- [ ] Message templates customization
-- [ ] Advanced scheduling (timezone support)
-- [ ] Message analytics and delivery reports
-
-### Version 2.1
-- [ ] Group message scheduling
-- [ ] File and media scheduling
-- [ ] Integration with calendar apps
-- [ ] Voice message scheduling
+- 📧 **Email**: support@telegram-scheduler.com
+- 💬 **Telegram**: @your_support_bot
+- 🐛 **Bug Reports**: GitHub Issues
+- 💡 **Feature Requests**: GitHub Discussions
 
 ---
 
-<div align="center">
-
-**Made with ❤️ by [Madhav Bagri](https://github.com/Madhav-M01)**
+**Made with ❤️ by the Telegram Scheduler Team**
 
 ⭐ Star this repo if you found it helpful!
-
-</div>
-#   s c h e d u l e r  
- 
