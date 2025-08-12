@@ -32,7 +32,7 @@ const Login = () => {
     setIsLoading(true);
   
     // Call backend to check if phone exists
-    const res = await fetch(`http://localhost:9000/check-user?phone=${userAPhone}`);
+    const res = await fetch(`https://message-scheduler-jbed.onrender.com/check-user?phone=${userAPhone}`);
     const data = await res.json();
   
     if (!data.exists) {
@@ -57,7 +57,7 @@ const Login = () => {
   
     try {
       // Call backend to check if user exists
-      const res = await fetch(`http://localhost:9000/check-user?phone=${encodeURIComponent(userBPhone)}`);
+      const res = await fetch(`https://message-scheduler-jbed.onrender.com/check-user?phone=${encodeURIComponent(userBPhone)}`);
       const data = await res.json();
   
       const isExistingUser = data.exists; // true/false from BE

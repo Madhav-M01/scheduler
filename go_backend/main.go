@@ -45,6 +45,9 @@ func main() {
 	}
 	botToken := "8350273383:AAFK4XS4qY1LNNHFvXnlENxU7L1yzbOONZ8"
 	mongoURI := os.Getenv("MONGO_URI")
+     Client ,err := mongo.Connect(context.TODO(), options.Client().ApplyURI(mongoURI))
+	 log.Print(Client)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "9000"

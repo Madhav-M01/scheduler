@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+ HEAD
 # 🚀 Telegram Message Scheduler
 
 A powerful Telegram bot application that allows users to schedule messages for future delivery. Built with Go backend and React frontend, featuring user authentication, message scheduling, and automated delivery.
@@ -322,7 +322,7 @@ Having issues? We're here to help!
 
 ⭐ Star this repo if you found it helpful!
 
-=======
+
 # 🚀 Telegram Message Scheduler
 
 A powerful Telegram bot application that allows users to schedule messages for future delivery. Built with Go backend and React frontend, featuring user authentication, message scheduling, and automated delivery.
@@ -645,4 +645,4 @@ Having issues? We're here to help!
 **Made with ❤️ by the Telegram Scheduler Team**
 
 ⭐ Star this repo if you found it helpful!
->>>>>>> e7a0d1f (add)
+
